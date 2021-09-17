@@ -18,6 +18,11 @@ connection.connect(err => {
   }
 })
 
+app.get('/', function (req, res) {
+  console.log("🚀 ~ file: app.js ~ line 22 ~ req", req.path)
+  res.send('Hello World');
+})
+
 
 const sql = 'SELECT * FROM tour_user';
 const sql2 = 'SELECT * FROM websites';
@@ -28,7 +33,6 @@ connection.query(sql, function (err, result) {
     console.log('[SELECT ERROR] - ', err.message);
     return;
   }
-
 });
 
 //查
