@@ -1,6 +1,9 @@
 const express = require('express') //引入express 模块
 const app = express() //创建实例
 const mysql = require('mysql') //引入mysql 模块
+const path = require('path')
+const indexRouter = require('./routes/index')
+const userRouter = require('./routes/users')
 // 创建数据库连接 填入数据库信息 
 //填自己数据库的信息!!!!!!!!!!!
 const connection = mysql.createConnection({
@@ -18,10 +21,6 @@ connection.connect(err => {
   }
 })
 
-app.get('/', function (req, res) {
-  console.log("🚀 ~ file: app.js ~ line 22 ~ req", req.path)
-  res.send('Hello World');
-})
 
 
 const sql = 'SELECT * FROM tour_user';
@@ -44,6 +43,35 @@ connection.query(sql2, function (err, result) {
 });
 
 connection.end();
+
+// 中间件---
+app.use('/', indexRouter)
+app.use('/users', userRouter)
+
+// 使用模板引擎
+app.set('views', path.join(__dirname, 'views'))// 设置存放模板文件的目录
+app.set('view engine', 'ejs')// 设置模板引擎为 ejs
+
+// 中间件next
+app.use(function (req, res, next) {
+  console.log('1')
+  next(new Error('haha'))
+})
+
+app.use(function (req, res, next) {
+  console.log('2')
+  res.status(200).end()
+})
+
+//错误处理
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+
+// 博客登录处理
+
+
 // 开启服务器
 app.listen(3000, () => {
   console.log('服务器在3000端口开启。。。。。');
